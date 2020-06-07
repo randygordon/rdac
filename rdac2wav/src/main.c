@@ -1,5 +1,10 @@
 #include <stdio.h>
 #include <sys/stat.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include "decode.h"
+#include "wav.h"
 
 /*
     VS to WAV file converter for Roland VS. Version 0.99
@@ -18,6 +23,12 @@ void convertMT2(char *inFileName, char *outFileName, int sampleRate, int bitDept
 void convertM16(char *inFileName, char *outFileName, int sampleRate, int bitDepth);
 void convertM24(char *inFileName, char *outFileName, int sampleRate, int bitDepth, char *clusterSize);
 void convertCDR(char *inFileName, char *outFileName, int sampleRate, int bitDepth);
+
+int isSupportedMode(char *mode);
+int isSupportedClusterSize(char *size);
+int isSupportedBitDepth(int bitDepth);
+long fsize(const char *const name);
+
 
 //*****************************************************************************
 int main(int argc, char **argv)
