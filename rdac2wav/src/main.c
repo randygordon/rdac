@@ -25,7 +25,7 @@ void convertM24(char *inFileName, char *outFileName, int sampleRate, int bitDept
 void convertCDR(char *inFileName, char *outFileName, int sampleRate, int bitDepth);
 
 int isSupportedMode(char *mode);
-int isSupportedClusterSize(char *size);
+int isSupportedClusterSize(char *size, char *mode);
 int isSupportedBitDepth(int bitDepth);
 long fsize(const char *const name);
 
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
         outFileName == NULL || strlen(outFileName) == 0 ||
         !isSupportedBitDepth(bitDepth) ||
         !isSupportedMode(rdacMode) ||
-        !isSupportedClusterSize(clusterSize)) {
+        !isSupportedClusterSize(clusterSize, rdacMode)) {
 
         printf("\n");
         printf("**********************************************************\n");
@@ -306,11 +306,16 @@ void convertMT2(char *inFileName, char *outFileName, int sampleRate, int bitDept
         pageSize      = 65536;
         blocksPerPage = 5460;
     }
+    else if (stricmp(clusterSize,"16k") == 0) {
+        pageSize      = 16384;
+        blocksPerPage = 1365;
+    }
 
     int pagePadBytes  = pageSize - blocksPerPage*12;
     int numPages      = ((int)fileSize)/pageSize;
     int leftOverBytes = ((int)fileSize)%pageSize;
     int numBlocks     = numPages*blocksPerPage + leftOverBytes/12;
+
 
     // Write the WAV header
     int  numSamples = numBlocks*16;
@@ -517,8 +522,9 @@ int isSupportedMode(char *mode)
     return 0;
 }
 //*****************************************************************************
-int isSupportedClusterSize(char *size)
+int isSupportedClusterSize(char *size, char *mode)
 {
+    if ((stricmp(size, "16k") == 0) && (stricmp(mode, "mt2") == 0) ) return 1;
     if (stricmp(size, "32k") == 0) return 1;
     if (stricmp(size, "64k") == 0) return 1;
     return 0;
